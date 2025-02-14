@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://bdeh473se331e"]
+
+[ext_resource type="Script" path="res://card/card_answer.gd" id="1_t5tvs"]
+
+[node name="CardAnswer" type="MarginContainer"]
+custom_minimum_size = Vector2(100, 100)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_t5tvs")
+
+[node name="Text" type="RichTextLabel" parent="."]
+layout_mode = 2
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[center]<veyr very long option one>"
+fit_content = true
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 2

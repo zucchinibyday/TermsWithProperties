@@ -1,0 +1,107 @@
+[gd_scene load_steps=4 format=3 uid="uid://bnc1vtcgdef5g"]
+
+[ext_resource type="PackedScene" uid="uid://dyawwe4uqvk0g" path="res://screens/term_set_builder_screen/term_list_item.tscn" id="1_8krfj"]
+[ext_resource type="Script" path="res://screens/term_set_builder_screen/term_set_builder_screen.gd" id="1_mmek3"]
+
+[sub_resource type="Theme" id="Theme_3v1hy"]
+
+[node name="TermSetBuilderScreen" type="Node2D" node_paths=PackedStringArray("term_set_name_text", "load_set_button", "load_set_text", "save_set_button")]
+script = ExtResource("1_mmek3")
+term_set_name_text = NodePath("HBoxContainer/VBoxContainer/TermSetNameLabel")
+load_set_button = NodePath("HBoxContainer/VBoxContainer/SetSaveLoad/Load/Button")
+load_set_text = NodePath("HBoxContainer/VBoxContainer/SetSaveLoad/Load/TextEdit")
+save_set_button = NodePath("HBoxContainer/VBoxContainer/SetSaveLoad/Save/Button")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+offset_right = 1280.0
+offset_bottom = 720.0
+theme = SubResource("Theme_3v1hy")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TermSetNameLabel" type="TextEdit" parent="HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+placeholder_text = "Default Term Set"
+
+[node name="TermAdder" type="MarginContainer" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/TermAdder"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/TermAdder/VBoxContainer"]
+layout_mode = 2
+
+[node name="TextEdit" type="TextEdit" parent="HBoxContainer/VBoxContainer/TermAdder/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.0
+placeholder_text = "Term name"
+
+[node name="Button" type="Button" parent="HBoxContainer/VBoxContainer/TermAdder/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Add"
+
+[node name="PropAdder" type="MarginContainer" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/PropAdder"]
+layout_mode = 2
+
+[node name="TextEdit" type="TextEdit" parent="HBoxContainer/VBoxContainer/PropAdder/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.0
+
+[node name="Button" type="Button" parent="HBoxContainer/VBoxContainer/PropAdder/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Add"
+
+[node name="SetSaveLoad" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Load" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/SetSaveLoad"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TextEdit" type="TextEdit" parent="HBoxContainer/VBoxContainer/SetSaveLoad/Load"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+placeholder_text = "Set to load"
+
+[node name="Button" type="Button" parent="HBoxContainer/VBoxContainer/SetSaveLoad/Load"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Load Set"
+
+[node name="Save" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/SetSaveLoad"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Button" type="Button" parent="HBoxContainer/VBoxContainer/SetSaveLoad/Save"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Save Set"
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TermList" type="VBoxContainer" parent="HBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="TermListItem1" parent="HBoxContainer/MarginContainer/TermList" instance=ExtResource("1_8krfj")]
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="HBoxContainer/MarginContainer"]
+layout_mode = 2

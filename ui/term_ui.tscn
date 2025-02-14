@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3 uid="uid://dyawwe4uqvk0g"]
+
+[ext_resource type="Script" path="res://ui/term_ui.gd" id="1_4s7we"]
+
+[node name="TermUI" type="VBoxContainer"]
+offset_right = 704.0
+offset_bottom = 31.0
+size_flags_horizontal = 3
+script = ExtResource("1_4s7we")
+
+[node name="Header" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="TermName" type="RichTextLabel" parent="Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 9.0
+bbcode_enabled = true
+text = "[center]Term Name"
+
+[node name="DeleteButton" type="Button" parent="Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "X"

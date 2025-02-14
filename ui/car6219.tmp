@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://mwcg6rr4qos8"]
+
+[ext_resource type="Script" path="res://card/card.gd" id="1_ty7xx"]
+
+[node name="CardScreen" type="Node2D"]
+
+[node name="Control" type="MarginContainer" parent="."]
+offset_right = 1280.0
+offset_bottom = 720.0
+
+[node name="Card" type="Control" parent="Control"]
+layout_mode = 2
+script = ExtResource("1_ty7xx")
+target_size = Vector2(1152, 648)

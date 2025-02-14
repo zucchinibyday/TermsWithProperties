@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=3 uid="uid://bsehwithhbpx0"]
+
+[ext_resource type="Script" path="res://ui/term_set_builder_screen/term_adder.gd" id="1_qrd8e"]
+
+[node name="TermAdder" type="VBoxContainer"]
+offset_right = 724.0
+offset_bottom = 402.0
+script = ExtResource("1_qrd8e")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="TextEdit" type="TextEdit" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.0
+placeholder_text = "Term name"
+
+[node name="Button" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Add"
+
+[node name="PropertyContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
