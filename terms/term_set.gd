@@ -24,7 +24,7 @@ func attempt_load(data: Dictionary) -> bool:
 
 func unload_term_set():
 	if unsaved_changes:
-		Globals.app_data.save()
+		AppData.save()
 	terms = []
 	property_groups = {}
 	open = false

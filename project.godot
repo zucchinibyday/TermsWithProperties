@@ -19,6 +19,7 @@ boot_splash/show_image=false
 
 Globals="*res://globals.gd"
 TermSet="*res://terms/term_set.gd"
+AppData="*res://app_data.gd"
 
 [display]
 

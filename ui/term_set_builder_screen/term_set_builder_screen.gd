@@ -24,14 +24,14 @@ func _ready() -> void:
 func rename_open_set() -> bool:
 	if not TermSet.open:
 		return false
-	Globals.app_data.rename_open_set(term_set_name_label.text, TermSet.set_name)
+	AppData.rename_open_set(term_set_name_label.text, TermSet.set_name)
 	TermSet.set_name = term_set_name_label.text
 	return true
 
 func _load_button_pressed():
 	if TermSet.open:
 		deconstruct()
-	var result := attempt_load(Globals.app_data.get_set_data(load_set_text.text))
+	var result := attempt_load(AppData.get_set_data(load_set_text.text))
 	if result != LoadResult.OK:
 		print(result)
 		return
@@ -49,25 +49,26 @@ func attempt_load(data: Dictionary) -> LoadResult:
 enum SaveResult { OK, NO_NAME }
 
 func save_open_set() -> SaveResult:
-	Globals.app_data.save()
+	AppData.save()
 	return SaveResult.OK
 
 
 func create_new_set():
-	Globals.app_data.save()
+	AppData.save()
 	TermSet.unload_term_set()
 	deconstruct()
 	TermSet.load_empty(create_set_text.text)
+	AppData.save()
 	build()
 
 func delete_open_set():
 	if not TermSet.open:
 		return
-	Globals.app_data.save()
+	AppData.save()
 	var set_to_delete = TermSet.set_name
 	TermSet.unload_term_set()
 	deconstruct()
-	Globals.app_data.delete_set(set_to_delete)
+	AppData.delete_set(set_to_delete)
 
 
 var rebuild_reasons: Array[TermSet.UpdateReasons] = [
