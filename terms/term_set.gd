@@ -1,5 +1,4 @@
 extends Node
-class_name TermSet
 
 
 var open := false
@@ -42,7 +41,7 @@ func load_term_set(data: Dictionary) -> bool:
 		for raw_property in raw_term["properties"]:
 			var property = TermProperty.new(raw_property["group"], raw_property["value"])
 			properties.append(property)
-		var new_term = Term.new(raw_term["name"], properties, self)
+		var new_term = Term.new(raw_term["name"], properties)
 		terms.append(new_term)
 	updated.emit(UpdateReasons.LOAD)
 	return true
@@ -78,7 +77,7 @@ func add_new_term(term_name: String, properties: Array[TermProperty]):
 			for prop in properties:
 				term.update_property(prop.group, prop.value)
 			return
-	var new_term = Term.new(term_name, properties, self)
+	var new_term = Term.new(term_name, properties)
 	terms.append(new_term)
 	updated.emit(UpdateReasons.TERM_ADDED)
 
@@ -96,6 +95,11 @@ func add_to_prop_group(property: TermProperty, term):
 	if not property.group in property_groups:
 		property_groups[property.group] = PropertyGroup.new()
 	property_groups[property.group].add_value(property.value, term)
+
+func update_prop_group(property: TermProperty, old_value: String, term: Term):
+	if not property.group in property_groups:
+		property_groups[property.group] = PropertyGroup.new()
+	
 
 func fill_card() -> Card:
 	var i = floor(randf() * len(terms))
@@ -115,14 +119,15 @@ class Term:
 	var name: String
 	# properties = <prop name>: { value: <prop value>, group: <property group> }
 	var properties: Array[TermProperty]
-	var term_set: TermSet
 	
-	func _init(_name: String, _properties: Array[TermProperty], _term_set: TermSet):
+	func _init(_name: String, _properties: Array[TermProperty]):
 		name = _name
 		properties = _properties
-		term_set = _term_set
 		for property in properties:
-			term_set.add_to_prop_group(property, self)
+			TermSet.add_to_prop_group(property, self)
+	
+	func add_property(group: String, value: String):
+		pass
 
 	func random_property() -> TermProperty:
 		var i = floor(randf() * len(self.properties))
@@ -131,8 +136,10 @@ class Term:
 	func update_property(group: String, new_value: String) -> bool:
 		for prop in properties:
 			if prop.group == group:
+				var old_value = prop.value
 				prop.value = new_value
-				term_set.set_updated.emit(UpdateReasons.TERM_UPDATED)
+				TermSet.update_prop_group(prop, old_value, self)
+				TermSet.set_updated.emit(UpdateReasons.TERM_UPDATED)
 				return true
 		return false
 		
@@ -146,18 +153,54 @@ class Term:
 		return data
 	
 	func delete():
-		term_set.delete_term(self)
+		TermSet.delete_term(self)
 		print("delete")
 
 
 class PropertyGroup:
 	# possible_values = { <value>: <list of terms with this value>, ... }
-	var possible_values: Dictionary
+	var _possible_values: Dictionary
 	
-	func add_value(value, term):
-		if not value in possible_values:
-			possible_values[value] = []
-		possible_values[value].append(term)
+	func add_value(value: String, term: Term):
+		if not value in _possible_values:
+			_possible_values[value] = [term]
+			return true
+		if term in _possible_values[value]:
+			return false
+		_possible_values[value].append(term)
+		return true
+	
+	func has_value(value: String) -> bool:
+		return value in _possible_values
+	
+	func get_possible_values() -> Array[String]:
+		var final: Array[String] = []
+		for pv in _possible_values:
+			if len(_possible_values[pv]) > 0:
+				final.append(pv)
+		return final
+	
+	func get_terms_with_value(value: String) -> Array[Term]:
+		if not has_value(value):
+			return []
+		return _possible_values[value]
+
+	func remove_value(value: String) -> bool:
+		if not value in _possible_values:
+			return false
+		_possible_values.erase(value)
+		return true
+
+	func remove_term_from_value(value: String, term: Term) -> bool:
+		if not value in _possible_values:
+			return false
+		if not term in _possible_values[value]:
+			return false
+		var i = _possible_values[value].find(term)
+		_possible_values[value].remove_at(i)
+		if len(_possible_values[value]) == 0:
+			_possible_values.erase(value)
+		return true
 
 
 class TermProperty:

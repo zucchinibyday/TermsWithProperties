@@ -18,6 +18,7 @@ boot_splash/show_image=false
 [autoload]
 
 Globals="*res://globals.gd"
+TermSet="*res://terms/term_set.gd"
 
 [display]
 

@@ -1,8 +1,6 @@
 extends Node
 
 
-var term_set: TermSet
-
 var app_data := AppData.new()
 
 var prop_ui_scene := preload("res://ui/property_ui.tscn")
@@ -14,7 +12,6 @@ enum DebugFlags { ALWAYS_LOAD_DEFAULT = 1 }
 
 func _ready() -> void:
 	debug |= DebugFlags.ALWAYS_LOAD_DEFAULT
-	term_set = TermSet.new()
 
 
 """
@@ -57,6 +54,9 @@ class AppData:
 		return _saved_sets[term_set_name]
 	
 	func rename_open_set(new_name: String, old_name: String):
+		if not TermSet.open:
+			return
+		save()
 		_saved_sets[new_name] = _saved_sets[old_name]
 		_saved_sets.erase(old_name)
 	
@@ -68,8 +68,8 @@ class AppData:
 
 	func save():
 		# First save the data for the currently opened set
-		if Globals.term_set.open:
-			_saved_sets[Globals.term_set.set_name] = Globals.term_set.save()
+		if TermSet.open:
+			_saved_sets[TermSet.set_name] = TermSet.save()
 		# Pack set data
 		var new_data := { "sets" = [] }
 		for saved_set_name in _saved_sets.keys():
