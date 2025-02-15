@@ -1,15 +1,22 @@
-[gd_scene load_steps=2 format=3 uid="uid://dyawwe4uqvk0g"]
+[gd_scene load_steps=3 format=3 uid="uid://dyawwe4uqvk0g"]
 
 [ext_resource type="Script" path="res://ui/term_ui.gd" id="1_4s7we"]
+[ext_resource type="PackedScene" uid="uid://dts55rlfm2cgg" path="res://ui/property_ui.tscn" id="2_pkuwn"]
 
-[node name="TermUI" type="VBoxContainer"]
+[node name="TermUI" type="VBoxContainer" node_paths=PackedStringArray("header", "delete_button", "prop_container", "add_prop_button", "new_prop_ui")]
 offset_right = 704.0
-offset_bottom = 31.0
+offset_bottom = 170.0
 size_flags_horizontal = 3
 script = ExtResource("1_4s7we")
+header = NodePath("Header")
+delete_button = NodePath("Header/DeleteButton")
+prop_container = NodePath("VScrollBar/PropContainter")
+add_prop_button = NodePath("HBoxContainer/AddPropButton")
+new_prop_ui = NodePath("HBoxContainer/PropertyUI")
 
 [node name="Header" type="HBoxContainer" parent="."]
 layout_mode = 2
+size_flags_vertical = 3
 
 [node name="TermName" type="RichTextLabel" parent="Header"]
 layout_mode = 2
@@ -22,3 +29,29 @@ text = "[center]Term Name"
 layout_mode = 2
 size_flags_horizontal = 3
 text = "X"
+
+[node name="VScrollBar" type="ScrollContainer" parent="."]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 4.0
+
+[node name="PropContainter" type="VBoxContainer" parent="VScrollBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PropertyUI" parent="HBoxContainer" instance=ExtResource("2_pkuwn")]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 9.0
+group_editable = true
+
+[node name="AddPropButton" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Add"

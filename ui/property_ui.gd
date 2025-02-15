@@ -5,24 +5,33 @@ class_name PropertyUI
 signal value_changed
 signal changes_confirmed
 
+@export var group_editable := false
+
 var group: String:
 	set(new_val):
-		$RichTextLabel.text = new_val
+		$GroupText.text = new_val
 		group = new_val
 	get:
-		return $RichTextLabel.text
+		return $GroupText.text
 
 var value: String:
 	set(new_val):
-		$TextEdit.text = new_val
+		$ValueText.text = new_val
 		value = new_val
 	get:
-		return $TextEdit.text
+		return $ValueText.text
 
 
 func _ready():
-	$TextEdit.text_changed.connect(func(): value_changed.emit(self))
-	$ConfirmButton.pressed.connect(func(): changes_confirmed.emit(self))
+	$ValueText.text_changed.connect(func(): value_changed.emit(self))
+	$ConfirmButton.pressed.connect(update_property)
+	$ValueText.focus_exited.connect(update_property)
+
+func _process(delta: float):
+	$GroupText.editable = group_editable
+
+func update_property():
+	changes_confirmed.emit(self)
 
 func build(property: TermSet.TermProperty) -> PropertyUI:
 	group = property.group

@@ -74,10 +74,14 @@ func delete_open_set():
 var rebuild_reasons: Array[TermSet.UpdateReasons] = [
 	TermSet.UpdateReasons.TERM_ADDED,
 	TermSet.UpdateReasons.TERM_REMOVED,
+	TermSet.UpdateReasons.TERM_UPDATED,
+	TermSet.UpdateReasons.PROPERTY_ADDED,
 ]
 
 func _term_set_updated(reason: TermSet.UpdateReasons):
+	print("ts was updated: %s" % reason)
 	if reason in rebuild_reasons:
+		print("this required rebuilding")
 		deconstruct()
 		build()
 

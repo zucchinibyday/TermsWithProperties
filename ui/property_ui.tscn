@@ -7,17 +7,17 @@ offset_right = 896.0
 offset_bottom = 23.0
 script = ExtResource("1_vg3xw")
 
-[node name="RichTextLabel" type="RichTextLabel" parent="."]
+[node name="GroupText" type="TextEdit" parent="."]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "<prop name>"
-fit_content = true
+placeholder_text = "Group name"
+editable = false
 
-[node name="TextEdit" type="TextEdit" parent="."]
+[node name="ValueText" type="TextEdit" parent="."]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
-text = "<default value>"
+placeholder_text = "Value name"
 
 [node name="ConfirmButton" type="Button" parent="."]
 layout_mode = 2

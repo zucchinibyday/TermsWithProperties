@@ -7,7 +7,7 @@ var set_name: String
 var terms: Array[Term]
 var property_groups: Dictionary
 
-enum UpdateReasons { UNLOAD, LOAD, TERM_ADDED, TERM_REMOVED, TERM_UPDATED }
+enum UpdateReasons { UNLOAD, LOAD, TERM_ADDED, TERM_REMOVED, TERM_UPDATED, PROPERTY_ADDED }
 signal updated
 
 @onready var card_scene := load("res://card/card.tscn")
@@ -61,7 +61,7 @@ func save() -> Dictionary:
 	unsaved_changes = false
 	return data
 
-static func get_empty_set_data(new_name := "Empty set") -> Dictionary:
+func get_empty_set_data(new_name := "Empty set") -> Dictionary:
 	return {
 		"name": new_name,
 		"terms": []
@@ -97,9 +97,13 @@ func add_to_prop_group(property: TermProperty, term):
 	property_groups[property.group].add_value(property.value, term)
 
 func update_prop_group(property: TermProperty, old_value: String, term: Term):
+	var prop_group: PropertyGroup
 	if not property.group in property_groups:
-		property_groups[property.group] = PropertyGroup.new()
-	
+		prop_group = PropertyGroup.new()
+	prop_group = property_groups[property.group]
+	prop_group.remove_term_from_value(old_value, term)
+	prop_group.add_value(property.value, term)
+
 
 func fill_card() -> Card:
 	var i = floor(randf() * len(terms))
@@ -126,8 +130,18 @@ class Term:
 		for property in properties:
 			TermSet.add_to_prop_group(property, self)
 	
-	func add_property(group: String, value: String):
-		pass
+	func add_property(group: String, value: String) -> bool:
+		for prop in properties:
+			if prop.group == group:
+				print("this prop already exists, do not add")
+				return false
+		var prop = TermProperty.new(group, value)
+		properties.append(prop)
+		TermSet.add_to_prop_group(prop, self)
+		print("this prop did not already exists, add")
+		TermSet.updated.emit(UpdateReasons.PROPERTY_ADDED)
+		return true
+
 
 	func random_property() -> TermProperty:
 		var i = floor(randf() * len(self.properties))
@@ -139,7 +153,7 @@ class Term:
 				var old_value = prop.value
 				prop.value = new_value
 				TermSet.update_prop_group(prop, old_value, self)
-				TermSet.set_updated.emit(UpdateReasons.TERM_UPDATED)
+				TermSet.updated.emit(UpdateReasons.TERM_UPDATED)
 				return true
 		return false
 		
@@ -180,7 +194,7 @@ class PropertyGroup:
 				final.append(pv)
 		return final
 	
-	func get_terms_with_value(value: String) -> Array[Term]:
+	func get_terms_with_value(value: String) -> Array:
 		if not has_value(value):
 			return []
 		return _possible_values[value]
