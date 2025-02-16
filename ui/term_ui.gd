@@ -4,7 +4,9 @@ class_name TermUI
 
 var prev_editable := true
 @export var editable := true
-@export var term_name_editable := false
+@export var term_name_editable := true
+@export var deletable := true
+@export var duplicable := true
 
 @export var dummy := false
 var term: TermSet.Term
@@ -18,6 +20,7 @@ var term: TermSet.Term
 
 
 signal deleted
+signal duplicated
 signal property_added
 
 
@@ -25,6 +28,7 @@ func _ready():
 	delete_button.pressed.connect(delete_term)
 	add_prop_button.pressed.connect(add_new_property)
 	term_name_text.text_changed.connect(_term_name_changed)
+	$Header/DuplicateButton.pressed.connect(duplicate_term)
 
 func _process(delta: float):
 	if editable != prev_editable:
@@ -35,6 +39,7 @@ func _process(delta: float):
 		# no need to worry about accidentally making editable that which should not be
 		set_text_edits_editable(self, editable)
 	term_name_text.editable = term_name_editable
+	$Header/DeleteButton.visible = deletable
 
 # Recursively searches a tree for text edits and enables or disables them
 func set_text_edits_editable(node: Node, editable: bool):
@@ -62,6 +67,12 @@ func deconstruct():
 	for child in prop_container.get_children():
 		prop_container.remove_child(child)
 
+func rebuild():
+	var old_term = term
+	deconstruct()
+	build(old_term)
+
+
 func _prop_value_changed(prop: PropertyUI):
 	if not term:
 		return
@@ -74,10 +85,16 @@ func _term_name_changed():
 	term.name = term_name_text.text
 
 func delete_term():
-	if not editable or not term:
+	if not editable or not deletable or not term:
 		return
 	deleted.emit()
 	term.delete()
+
+func duplicate_term():
+	if not editable or not duplicable or not term:
+		return
+	TermSet.add_new_term("Copy of %s" % term.name, term.properties)
+	duplicated.emit()
 
 func add_new_property():
 	if not editable or not term:
@@ -85,6 +102,7 @@ func add_new_property():
 	var new_prop = TermSet.TermProperty.new(new_prop_ui.group, new_prop_ui.value)
 	term.add_property(new_prop)
 	property_added.emit(new_prop)
+	rebuild()
 
 func delete_property(prop_ui: PropertyUI):
 	TermSet.remove_from_prop_group(prop_ui.property, term)

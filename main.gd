@@ -12,5 +12,6 @@ func _ready():
 
 func _process(delta: float):
 	if Input.is_action_just_pressed("reload_ui"):
+		print("Rebuild")
 		current_screen.deconstruct()
 		current_screen.build()

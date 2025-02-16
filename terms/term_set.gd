@@ -77,10 +77,12 @@ func get_empty_set_data(new_name := "Empty set") -> Dictionary:
 # If a term already exists, automatically updates the term
 # Else creates the new term
 func add_new_term(term_name: String, properties: Array[TermProperty]):
+	print("add new term")
 	for term in terms:
 		if term_name == term.name:
 			for prop in properties:
 				term.update_property(prop.group, prop.value)
+			print("term already existed")
 			return
 	var new_term = Term.new(term_name, properties)
 	terms.append(new_term)
@@ -149,6 +151,7 @@ class Term:
 	var name: String
 	# dummy terms do not update the termset whatsoever
 	var dummy := false
+	var _copy_counter := 0
 	# properties = <prop name>: { value: <prop value>, group: <property group> }
 	var properties: Array[TermProperty]
 	
@@ -188,10 +191,16 @@ class Term:
 				return true
 		return false
 	
-	func duplicate(new_is_dummy := false) -> Term:
+	func duplicate(new_name := "", new_is_dummy := false) -> Term:
+		if new_name == "":
+			if dummy:
+				new_name = name
+			else:
+				_copy_counter += 1
+				new_name = "%s%s" % [name, _copy_counter]
 		var new_term: Term
 		if new_is_dummy:
-			new_term = Term.new(name, [] as Array[TermProperty])
+			new_term = Term.new(new_name, [] as Array[TermProperty])
 			new_term.dummy = dummy
 			new_term.properties = properties
 		else:

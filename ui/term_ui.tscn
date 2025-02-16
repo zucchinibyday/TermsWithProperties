@@ -31,6 +31,11 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "X"
 
+[node name="DuplicateButton" type="Button" parent="Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "⧉"
+
 [node name="VScrollBar" type="ScrollContainer" parent="."]
 custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
