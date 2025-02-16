@@ -3,27 +3,28 @@
 [ext_resource type="Script" path="res://ui/term_ui.gd" id="1_4s7we"]
 [ext_resource type="PackedScene" uid="uid://dts55rlfm2cgg" path="res://ui/property_ui.tscn" id="2_pkuwn"]
 
-[node name="TermUI" type="VBoxContainer" node_paths=PackedStringArray("header", "delete_button", "prop_container", "add_prop_button", "new_prop_ui")]
+[node name="TermUI" type="VBoxContainer" node_paths=PackedStringArray("header", "term_name_text", "delete_button", "prop_container", "add_prop_button", "new_prop_ui")]
 offset_right = 704.0
 offset_bottom = 170.0
 size_flags_horizontal = 3
 script = ExtResource("1_4s7we")
 header = NodePath("Header")
+term_name_text = NodePath("Header/TermName")
 delete_button = NodePath("Header/DeleteButton")
 prop_container = NodePath("VScrollBar/PropContainter")
-add_prop_button = NodePath("HBoxContainer/AddPropButton")
-new_prop_ui = NodePath("HBoxContainer/PropertyUI")
+add_prop_button = NodePath("PropAdder/AddPropButton")
+new_prop_ui = NodePath("PropAdder/PropertyUI")
 
 [node name="Header" type="HBoxContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="TermName" type="RichTextLabel" parent="Header"]
+[node name="TermName" type="TextEdit" parent="Header"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 9.0
-bbcode_enabled = true
-text = "[center]Term Name"
+placeholder_text = "Term Name"
+editable = false
 
 [node name="DeleteButton" type="Button" parent="Header"]
 layout_mode = 2
@@ -41,17 +42,18 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="PropAdder" type="HBoxContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="PropertyUI" parent="HBoxContainer" instance=ExtResource("2_pkuwn")]
+[node name="PropertyUI" parent="PropAdder" instance=ExtResource("2_pkuwn")]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 9.0
 group_editable = true
+deletable = false
 
-[node name="AddPropButton" type="Button" parent="HBoxContainer"]
+[node name="AddPropButton" type="Button" parent="PropAdder"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Add"

@@ -16,6 +16,11 @@ signal updated
 func _ready():
 	updated.connect(func(reason): unsaved_changes = true)
 
+func _process(delta: float) -> void:
+	if Input.is_action_just_pressed("ui_accept"):
+		if open:
+			print(has_term("Rose"))
+
 
 func attempt_load(data: Dictionary) -> bool:
 	if open:
@@ -79,6 +84,7 @@ func add_new_term(term_name: String, properties: Array[TermProperty]):
 			return
 	var new_term = Term.new(term_name, properties)
 	terms.append(new_term)
+	unsaved_changes = true
 	updated.emit(UpdateReasons.TERM_ADDED)
 
 func delete_term(term: Term) -> bool:
@@ -90,11 +96,31 @@ func delete_term(term: Term) -> bool:
 	updated.emit(UpdateReasons.TERM_REMOVED)
 	return true
 
+func dummy_term(dummy_name := "Dummy") -> TermSet.Term:
+	var props: Array[TermProperty] = []
+	for group in property_groups:
+		props.append(TermProperty.new(group, ""))
+	var dummy := Term.new(dummy_name, props)
+	dummy.dummy = true
+	return dummy
 
-func add_to_prop_group(property: TermProperty, term):
+func has_term(term_name: String) -> bool:
+	for term in terms:
+		if term.name == term_name:
+			return true
+	return false
+
+
+# Property groups automatically check for repeated values
+func add_to_prop_group(property: TermProperty, term: Term = null):
 	if not property.group in property_groups:
 		property_groups[property.group] = PropertyGroup.new()
 	property_groups[property.group].add_value(property.value, term)
+
+func remove_from_prop_group(property: TermProperty, term: Term = null):
+	if not property.group in property_groups:
+		return
+	property_groups[property.group].remove_term_from_value(property.value, term)
 
 func update_prop_group(property: TermProperty, old_value: String, term: Term):
 	var prop_group: PropertyGroup
@@ -121,6 +147,8 @@ func fill_card() -> Card:
 
 class Term:
 	var name: String
+	# dummy terms do not update the termset whatsoever
+	var dummy := false
 	# properties = <prop name>: { value: <prop value>, group: <property group> }
 	var properties: Array[TermProperty]
 	
@@ -130,18 +158,19 @@ class Term:
 		for property in properties:
 			TermSet.add_to_prop_group(property, self)
 	
-	func add_property(group: String, value: String) -> bool:
+	func add_property(new_property: TermProperty, notify := true) -> bool:
+		if new_property in properties:
+			return false
 		for prop in properties:
-			if prop.group == group:
-				print("this prop already exists, do not add")
+			if prop.group == new_property.group:
 				return false
-		var prop = TermProperty.new(group, value)
-		properties.append(prop)
-		TermSet.add_to_prop_group(prop, self)
-		print("this prop did not already exists, add")
-		TermSet.updated.emit(UpdateReasons.PROPERTY_ADDED)
+		properties.append(new_property)
+		if dummy:
+			return true
+		TermSet.add_to_prop_group(new_property, self)
+		if notify:
+			TermSet.updated.emit(UpdateReasons.PROPERTY_ADDED)
 		return true
-
 
 	func random_property() -> TermProperty:
 		var i = floor(randf() * len(self.properties))
@@ -152,11 +181,23 @@ class Term:
 			if prop.group == group:
 				var old_value = prop.value
 				prop.value = new_value
+				if dummy:
+					return true
 				TermSet.update_prop_group(prop, old_value, self)
 				TermSet.updated.emit(UpdateReasons.TERM_UPDATED)
 				return true
 		return false
-		
+	
+	func duplicate(new_is_dummy := false) -> Term:
+		var new_term: Term
+		if new_is_dummy:
+			new_term = Term.new(name, [] as Array[TermProperty])
+			new_term.dummy = dummy
+			new_term.properties = properties
+		else:
+			new_term = Term.new(name, properties)
+		return new_term
+
 	func save() -> Dictionary:
 		var data = {
 			"name": name,
@@ -167,22 +208,20 @@ class Term:
 		return data
 	
 	func delete():
+		if dummy:
+			return
 		TermSet.delete_term(self)
-		print("delete")
 
 
 class PropertyGroup:
 	# possible_values = { <value>: <list of terms with this value>, ... }
 	var _possible_values: Dictionary
 	
-	func add_value(value: String, term: Term):
+	func add_value(value: String, term: Term = null):
 		if not value in _possible_values:
-			_possible_values[value] = [term]
-			return true
-		if term in _possible_values[value]:
-			return false
-		_possible_values[value].append(term)
-		return true
+			_possible_values[value] = []
+		if term:
+			_possible_values[value].append(term)
 	
 	func has_value(value: String) -> bool:
 		return value in _possible_values

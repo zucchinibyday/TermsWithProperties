@@ -33,12 +33,10 @@ placeholder_text = "Set name"
 
 [node name="TermAdder" parent="HBoxContainer/VBoxContainer" instance=ExtResource("2_l5tqg")]
 layout_mode = 2
-size_flags_vertical = 3
 size_flags_stretch_ratio = 3.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
 layout_mode = 2
-size_flags_vertical = 3
 
 [node name="Create" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
@@ -50,6 +48,7 @@ layout_mode = 2
 placeholder_text = "New set name"
 
 [node name="CreateButton" type="Button" parent="HBoxContainer/VBoxContainer/HBoxContainer/Create"]
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -65,18 +64,21 @@ layout_mode = 2
 placeholder_text = "Set to load"
 
 [node name="LoadButton" type="Button" parent="HBoxContainer/VBoxContainer/HBoxContainer/Load"]
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 text = "Load Set"
 
 [node name="SaveButton" type="Button" parent="HBoxContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 text = "Save Set"
 
 [node name="DeleteButton" type="Button" parent="HBoxContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Delete Set"

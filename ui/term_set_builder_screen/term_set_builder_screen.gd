@@ -79,9 +79,7 @@ var rebuild_reasons: Array[TermSet.UpdateReasons] = [
 ]
 
 func _term_set_updated(reason: TermSet.UpdateReasons):
-	print("ts was updated: %s" % reason)
 	if reason in rebuild_reasons:
-		print("this required rebuilding")
 		deconstruct()
 		build()
 
@@ -90,9 +88,9 @@ func build():
 	for term: TermSet.Term in TermSet.terms:
 		term_item_list.add_child(Globals.term_ui_scene.instantiate().build(term))
 	term_adder.build()
-	
 
 func deconstruct():
+	AppData.save()
 	term_set_name_label.text = ""
 	for child in term_item_list.get_children():
 		term_item_list.remove_child(child)

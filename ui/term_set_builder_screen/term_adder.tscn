@@ -1,29 +1,22 @@
-[gd_scene load_steps=2 format=3 uid="uid://bsehwithhbpx0"]
+[gd_scene load_steps=3 format=3 uid="uid://bsehwithhbpx0"]
 
 [ext_resource type="Script" path="res://ui/term_set_builder_screen/term_adder.gd" id="1_qrd8e"]
+[ext_resource type="PackedScene" uid="uid://dyawwe4uqvk0g" path="res://ui/term_ui.tscn" id="2_sl15k"]
 
-[node name="TermAdder" type="VBoxContainer"]
-offset_right = 724.0
-offset_bottom = 402.0
+[node name="TermAdder" type="VBoxContainer" node_paths=PackedStringArray("dummy_term_ui", "button")]
+offset_right = 683.0
+offset_bottom = 230.0
 script = ExtResource("1_qrd8e")
+dummy_term_ui = NodePath("DummyTerm")
+button = NodePath("Button")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
-layout_mode = 2
-
-[node name="TextEdit" type="TextEdit" parent="HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 4.0
-placeholder_text = "Term name"
-
-[node name="Button" type="Button" parent="HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Add"
-
-[node name="PropertyContainer" type="VBoxContainer" parent="."]
-layout_mode = 2
-
-[node name="Panel" type="Panel" parent="."]
+[node name="DummyTerm" parent="." instance=ExtResource("2_sl15k")]
 layout_mode = 2
 size_flags_vertical = 3
+dummy = true
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_vertical = 3
+text = "Add term"

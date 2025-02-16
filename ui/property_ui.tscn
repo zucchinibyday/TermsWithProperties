@@ -22,3 +22,7 @@ placeholder_text = "Value name"
 [node name="ConfirmButton" type="Button" parent="."]
 layout_mode = 2
 text = "✓"
+
+[node name="DeleteButton" type="Button" parent="."]
+layout_mode = 2
+text = "X"

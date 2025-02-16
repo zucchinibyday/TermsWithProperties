@@ -4,8 +4,10 @@ class_name PropertyUI
 
 signal value_changed
 signal changes_confirmed
+signal delete_property
 
 @export var group_editable := false
+@export var deletable := true
 
 var group: String:
 	set(new_val):
@@ -21,11 +23,21 @@ var value: String:
 	get:
 		return $ValueText.text
 
+var property: TermSet.TermProperty:
+	get:
+		return TermSet.TermProperty.new(group, value)
+
 
 func _ready():
+	$GroupText.text_changed.connect(func(): value_changed.emit(self))
+	$GroupText.focus_exited.connect(update_property)
 	$ValueText.text_changed.connect(func(): value_changed.emit(self))
-	$ConfirmButton.pressed.connect(update_property)
 	$ValueText.focus_exited.connect(update_property)
+	$ConfirmButton.pressed.connect(update_property)
+	$DeleteButton.pressed.connect(func(): 
+		if deletable:
+			delete_property.emit(self)
+	)
 
 func _process(delta: float):
 	$GroupText.editable = group_editable

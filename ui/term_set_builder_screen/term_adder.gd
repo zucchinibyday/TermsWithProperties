@@ -2,23 +2,35 @@ extends VBoxContainer
 class_name TermAdder
 
 
+# The term ui the user can use to write a new term
+@export var dummy_term_ui: TermUI
+var dummy_term: TermSet.Term
+@export var button: Button
+
+
 func _ready():
-	$HBoxContainer/Button.pressed.connect(add_term)
+	dummy_term_ui.property_added.connect(property_added)
+	button.pressed.connect(add_term)
 
 
-func build() -> TermAdder:
-	for prop_group: String in TermSet.property_groups.keys():
-		$PropertyContainer.add_child(Globals.prop_ui_scene.instantiate().build_raw(prop_group))
+func build(new_dummy := TermSet.dummy_term()) -> TermAdder:
+	dummy_term = new_dummy
+	dummy_term_ui.build(dummy_term)
+	dummy_term_ui.term_name_editable = true
 	return self
 
 func deconstruct():
-	for prop in $PropertyContainer.get_children():
-		prop.queue_free()
-	$HBoxContainer/TextEdit.text = ""
+	dummy_term_ui.deconstruct()
+
+
+func property_added(new_property):
+	TermSet.add_to_prop_group(new_property, null)
+	deconstruct()
+	build(dummy_term)
 
 
 func add_term():
-	var props: Array[TermSet.TermProperty]
-	for prop_ui in $PropertyContainer.get_children():
-		props.append(TermSet.TermProperty.new(prop_ui.group, prop_ui.value))
-	TermSet.add_new_term($HBoxContainer/TextEdit.text, props)
+	if not TermSet.open:
+		return
+	TermSet.add_new_term(dummy_term.name, dummy_term.properties)
+	AppData.save()
