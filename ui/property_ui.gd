@@ -16,7 +16,7 @@ var group: String:
 	get:
 		return $GroupText.text
 
-var value: String:
+var value:
 	set(new_val):
 		$ValueText.text = new_val
 		value = new_val

@@ -105,5 +105,5 @@ func add_new_property():
 	rebuild()
 
 func delete_property(prop_ui: PropertyUI):
-	TermSet.remove_from_prop_group(prop_ui.property, term)
+	term.delete_property(prop_ui.group)
 	prop_ui.queue_free()

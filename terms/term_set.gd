@@ -16,11 +16,6 @@ signal updated
 func _ready():
 	updated.connect(func(reason): unsaved_changes = true)
 
-func _process(delta: float) -> void:
-	if Input.is_action_just_pressed("ui_accept"):
-		if open:
-			print(has_term("Rose"))
-
 
 func attempt_load(data: Dictionary) -> bool:
 	if open:
@@ -77,12 +72,10 @@ func get_empty_set_data(new_name := "Empty set") -> Dictionary:
 # If a term already exists, automatically updates the term
 # Else creates the new term
 func add_new_term(term_name: String, properties: Array[TermProperty]):
-	print("add new term")
 	for term in terms:
 		if term_name == term.name:
 			for prop in properties:
 				term.update_property(prop.group, prop.value)
-			print("term already existed")
 			return
 	var new_term = Term.new(term_name, properties)
 	terms.append(new_term)
@@ -92,7 +85,6 @@ func add_new_term(term_name: String, properties: Array[TermProperty]):
 func delete_term(term: Term) -> bool:
 	var term_index = terms.find(term)
 	if term_index == -1:
-		print("term was not found")
 		return false
 	terms.remove_at(term_index)
 	updated.emit(UpdateReasons.TERM_REMOVED)
@@ -124,7 +116,7 @@ func remove_from_prop_group(property: TermProperty, term: Term = null):
 		return
 	property_groups[property.group].remove_term_from_value(property.value, term)
 
-func update_prop_group(property: TermProperty, old_value: String, term: Term):
+func update_prop_group(property: TermProperty, old_value, term: Term):
 	var prop_group: PropertyGroup
 	if not property.group in property_groups:
 		prop_group = PropertyGroup.new()
@@ -133,6 +125,7 @@ func update_prop_group(property: TermProperty, old_value: String, term: Term):
 	prop_group.add_value(property.value, term)
 
 
+# deprecated
 func fill_card() -> Card:
 	var i = floor(randf() * len(terms))
 	var random_term := terms[i]
@@ -179,7 +172,7 @@ class Term:
 		var i = floor(randf() * len(self.properties))
 		return self.properties[i]
 	
-	func update_property(group: String, new_value: String) -> bool:
+	func update_property(group: String, new_value) -> bool:
 		for prop in properties:
 			if prop.group == group:
 				var old_value = prop.value
@@ -189,6 +182,19 @@ class Term:
 				TermSet.update_prop_group(prop, old_value, self)
 				TermSet.updated.emit(UpdateReasons.TERM_UPDATED)
 				return true
+		return false
+	
+	func delete_property(group: String) -> bool:
+		print("try delete")
+		var prop
+		for i in range(len(properties)):
+			prop = properties[i]
+			if prop.group == group:
+				TermSet.remove_from_prop_group(prop, self)
+				properties.remove_at(i)
+				print("deleted")
+				return true
+		print("not found")
 		return false
 	
 	func duplicate(new_name := "", new_is_dummy := false) -> Term:
@@ -226,34 +232,34 @@ class PropertyGroup:
 	# possible_values = { <value>: <list of terms with this value>, ... }
 	var _possible_values: Dictionary
 	
-	func add_value(value: String, term: Term = null):
+	func add_value(value, term: Term = null):
 		if not value in _possible_values:
 			_possible_values[value] = []
 		if term:
 			_possible_values[value].append(term)
 	
-	func has_value(value: String) -> bool:
+	func has_value(value) -> bool:
 		return value in _possible_values
 	
-	func get_possible_values() -> Array[String]:
-		var final: Array[String] = []
+	func get_possible_values() -> Array:
+		var final: Array = []
 		for pv in _possible_values:
 			if len(_possible_values[pv]) > 0:
 				final.append(pv)
 		return final
 	
-	func get_terms_with_value(value: String) -> Array:
+	func get_terms_with_value(value) -> Array:
 		if not has_value(value):
 			return []
 		return _possible_values[value]
 
-	func remove_value(value: String) -> bool:
+	func remove_value(value) -> bool:
 		if not value in _possible_values:
 			return false
 		_possible_values.erase(value)
 		return true
 
-	func remove_term_from_value(value: String, term: Term) -> bool:
+	func remove_term_from_value(value, term: Term) -> bool:
 		if not value in _possible_values:
 			return false
 		if not term in _possible_values[value]:
@@ -266,15 +272,20 @@ class PropertyGroup:
 
 
 class TermProperty:
+	var is_boolean := false
+	var group: String
 	var value
-	var group
 	
-	func _init(_group, _value):
+	func _init(_group, _value, _is_boolean := false):
 		group = _group
 		value = _value
+		is_boolean = _is_boolean
 		
 	func save() -> Dictionary:
-		return {
+		var r := {
 			"group": group,
 			"value": value
 		}
+		if is_boolean:
+			r["is_boolean"] = true
+		return r
