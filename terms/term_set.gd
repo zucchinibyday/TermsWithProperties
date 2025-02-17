@@ -272,20 +272,15 @@ class PropertyGroup:
 
 
 class TermProperty:
-	var is_boolean := false
 	var group: String
 	var value
 	
-	func _init(_group, _value, _is_boolean := false):
+	func _init(_group, _value):
 		group = _group
 		value = _value
-		is_boolean = _is_boolean
 		
 	func save() -> Dictionary:
-		var r := {
+		return {
 			"group": group,
 			"value": value
 		}
-		if is_boolean:
-			r["is_boolean"] = true
-		return r

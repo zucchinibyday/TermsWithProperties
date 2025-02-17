@@ -20,7 +20,7 @@ var value:
 	set(new_val):
 		$ValueText.text = new_val
 		value = new_val
-	get:
+	get: 
 		return $ValueText.text
 
 var property: TermSet.TermProperty:

@@ -4,7 +4,7 @@
 
 [node name="PropertyUI" type="HBoxContainer"]
 offset_right = 896.0
-offset_bottom = 23.0
+offset_bottom = 31.0
 script = ExtResource("1_vg3xw")
 
 [node name="GroupText" type="TextEdit" parent="."]
