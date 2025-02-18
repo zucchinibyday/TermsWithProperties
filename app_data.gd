@@ -16,12 +16,12 @@ format of metadata:
 var _saved_sets := {}
 
 func _init():
-	"""var metafile = FileAccess.open(
-			meta_path() if DirAccess.dir_exists_absolute(meta_path()) 
-				else default_meta_path(),
-			FileAccess.READ
-	)"""
-	var metafile = FileAccess.open(default_meta_path(), FileAccess.READ)
+	var path = ""
+	path = (meta_path() 
+		if meta_exists() and Globals.debug & Globals.DebugFlags.ALWAYS_LOAD_DEFAULT == 0
+		else default_meta_path()
+	)
+	var metafile := FileAccess.open(path, FileAccess.READ)
 	var data: Dictionary = JSON.parse_string(metafile.get_as_text())
 	for _set in data["sets"]:
 		_saved_sets[_set["name"]] = _set
@@ -31,6 +31,15 @@ func app_dir():
 
 func meta_path():
 	return "%smeta.json" % app_dir()
+
+func meta_exists():
+	return FileAccess.file_exists(meta_path())
+
+func delete_meta_file():
+	if not meta_exists():
+		print("meta did not exist")
+		return
+	DirAccess.open(app_dir()).remove(meta_path())
 
 func default_meta_path():
 	return "res://default_app_data.json"
@@ -62,6 +71,6 @@ func save():
 		var saved_set = _saved_sets[saved_set_name]
 		new_data["sets"].append(saved_set)
 	# Write to file
-	DirAccess.open(app_dir()).remove(meta_path())
+	delete_meta_file()
 	var metafile = FileAccess.open(meta_path(), FileAccess.WRITE)
 	metafile.store_string(JSON.stringify(new_data))

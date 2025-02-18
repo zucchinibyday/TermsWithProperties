@@ -9,6 +9,7 @@ signal delete_property
 @export var group_editable := false
 @export var deletable := true
 
+var previous_group: String
 var group: String:
 	set(new_val):
 		$GroupText.text = new_val
@@ -16,6 +17,7 @@ var group: String:
 	get:
 		return $GroupText.text
 
+var previous_value: String
 var value:
 	set(new_val):
 		$ValueText.text = new_val
@@ -43,11 +45,17 @@ func _process(delta: float):
 	$GroupText.editable = group_editable
 
 func update_property():
+	if previous_value == value and previous_group == group:
+		return
+	previous_group = group
+	previous_value = value
 	changes_confirmed.emit(self)
 
 func build(property: TermSet.TermProperty) -> PropertyUI:
 	group = property.group
 	value = property.value
+	previous_group = group
+	previous_value = value
 	return self
 
 func build_raw(_group: String, _value := "") -> PropertyUI:

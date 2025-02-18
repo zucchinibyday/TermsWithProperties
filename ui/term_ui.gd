@@ -78,6 +78,7 @@ func _prop_value_changed(prop: PropertyUI):
 		return
 	if editable:
 		term.update_property(prop.group, prop.value)
+	rebuild()
 
 func _term_name_changed():
 	if not term:
